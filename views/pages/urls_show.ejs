@@ -1,0 +1,31 @@
+<!-- views/pages/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/_head %>
+</head>
+<body class="container">
+
+<header>
+    <% include ../partials/_header %>
+</header>
+
+<main>
+    <div class="jumbotron">
+        <h1>URL's</h1>
+        <ul class="list-group" style="list-style: none;">
+          <li><b><%= URL[shortURL] %></b> is shortened to <b><%= shortURL %></b></li>
+        </ul>
+    </div>
+    <div>
+      <a>SHORTEN URL</a>
+    </div>
+</main>
+
+<footer>
+    <% include ../partials/_footer %>
+</footer>
+
+</body>
+</html>
