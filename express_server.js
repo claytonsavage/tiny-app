@@ -51,9 +51,9 @@ app.get('/new', function(req, res) {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL);
+  console.log(addHTTPS(req.body.longURL));
   let newShortURL = generateRandomString();
-  urlDatabase[newShortURL] = req.body.longURL;
+  urlDatabase[newShortURL] = addHTTPS(req.body.longURL);
   let templateVars = { urls: urlDatabase };
   res.render('pages/urls_index', templateVars);
 });
@@ -62,3 +62,13 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL =urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
+
+const addHTTPS =function (longURL) {
+  var substringHTTPS = "https://",
+      substringHTTP = "http://";
+  if (longURL.includes(substringHTTP) === true || longURL.includes(substringHTTPS)) {
+    return longURL;
+  } else {
+    return substringHTTP + longURL;
+  }
+}
