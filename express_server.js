@@ -10,6 +10,16 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString() {
+  var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 5; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
 app.get('/', function(req, res) {
     res.render('pages/index');
 });
@@ -41,6 +51,14 @@ app.get('/new', function(req, res) {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  console.log(req.body.longURL);
+  let newShortURL = generateRandomString();
+  urlDatabase[newShortURL] = req.body.longURL;
+  let templateVars = { urls: urlDatabase };
+  res.render('pages/urls_index', templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL =urlDatabase[req.params.shortURL]
+  res.redirect(longURL);
 });
