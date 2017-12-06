@@ -20,7 +20,18 @@ function generateRandomString() {
     return text;
 }
 
+const addHTTP =function (longURL) {
+  var substringHTTPS = "https://",
+      substringHTTP = "http://";
+  if (longURL.includes(substringHTTP) === true || longURL.includes(substringHTTPS)) {
+    return longURL;
+  } else {
+    return substringHTTP + longURL;
+  }
+};
+
 app.get('/', function(req, res) {
+    res.status(200);
     res.render('pages/index');
 });
 
@@ -30,45 +41,48 @@ app.listen(PORT, () => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
+  res.status(200);
   res.render('pages/urls_index', templateVars);
-});
-
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-app.get('/about', function(req, res) {
-    res.render('pages/about');
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase };
+  res.status(200);
   res.render("pages/urls_show", templateVars);
 });
 
 app.get('/new', function(req, res) {
+    res.status(200);
     res.render('pages/urls_new');
 });
 
 app.post("/urls", (req, res) => {
-  console.log(addHTTPS(req.body.longURL));
+  console.log(addHTTP(req.body.longURL));
   let newShortURL = generateRandomString();
-  urlDatabase[newShortURL] = addHTTPS(req.body.longURL);
+  urlDatabase[newShortURL] = addHTTP(req.body.longURL);
   let templateVars = { urls: urlDatabase };
   res.render('pages/urls_index', templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL =urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(302, longURL);
 });
 
-const addHTTPS =function (longURL) {
-  var substringHTTPS = "https://",
-      substringHTTP = "http://";
-  if (longURL.includes(substringHTTP) === true || longURL.includes(substringHTTPS)) {
-    return longURL;
-  } else {
-    return substringHTTP + longURL;
-  }
-}
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  let shortURL = req.params.shortURL;
+  let shortURLkey = shortURL.toString();
+  delete templateVars.urls[shortURLkey];
+  res.redirect(302, '/urls');
+});
+
+app.post("/urls/:shortURL/update", (req, res) => {
+  //update the db with new long url
+  let longURL = urlDatabase[req.params.shortURL];
+  let shortURL = req.params.shortURL;
+  let templateVars = { urls: urlDatabase };
+  let newValue = addHTTP(req.body.longURL);
+  templateVars.urls[shortURL] = [newValue];
+  res.redirect(302, '/urls/' + req.params.shortURL);
+});

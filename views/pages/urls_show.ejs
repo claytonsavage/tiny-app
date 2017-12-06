@@ -13,10 +13,11 @@
 
 <main>
     <div class="jumbotron">
-        <h1>URL's</h1>
-        <ul class="list-group" style="list-style: none;">
-          <li><b><%= URL[shortURL] %></b> is shortened to <b><%= shortURL %></b></li>
-        </ul>
+        <h1><%= shortURL %></h1>
+        <form action="/urls/<%= shortURL %>/update" method="POST" style="margin:0px;">
+        <input id="longURL" type="text" name="longURL" placeholder="<%= URL[shortURL] %>" style="width: 300px">
+        <input type="submit" value="Update">
+        </form>
     </div>
     <div>
       <a>SHORTEN URL</a>
