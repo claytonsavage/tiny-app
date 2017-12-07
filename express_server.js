@@ -54,19 +54,19 @@ app.get('/', function(req, res) {
 
 
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, username: req.cookies['user_id'] };
   res.render('pages/urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  let templateVars = { shortURL: req.params.id, URL: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { shortURL: req.params.id, URL: urlDatabase, username: req.cookies['user_id'] };
   res.render('pages/urls_new', templateVars);
 });
 
 app.post('/urls', (req, res) => {
   let newShortURL = generateRandomString();
   urlDatabase[newShortURL] = addHTTP(req.body.longURL);
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, username: req.cookies['user_id'] };
   res.render('pages/urls_index', templateVars);
 });
 
@@ -78,12 +78,12 @@ app.post('/login', (req, res) => {
 
 app.post('/logout', (req, res) => {
   let username = req.body.username;
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect(302, '/urls');
 });
 
 app.get ('/register', (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, username: req.cookies['user_id'] };
   res.render('pages/register', templateVars);
 });
 
@@ -104,7 +104,6 @@ app.post ('/register', (req, res) => {
     res.send('Please enter email and password');
   return;
   } if ( found === true ){
-    console.log('already exists');
     res.status(400);
     res.send('User already exists');
   } else {
@@ -126,7 +125,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, username: req.cookies['user_id'] };
   let shortURL = req.params.shortURL;
   let shortURLkey = shortURL.toString();
   delete templateVars.urls[shortURLkey];
@@ -136,13 +135,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   let shortURL = req.params.shortURL;
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, username: req.cookies['user_id'] };
   let newValue = addHTTP(req.body.longURL);
   templateVars.urls[shortURL] = [newValue];
   res.redirect(302, '/urls/' + req.params.shortURL);
 });
 
 app.get('/urls/:id', (req, res) => {
-  let templateVars = { shortURL: req.params.id, URL: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { shortURL: req.params.id, URL: urlDatabase, username: req.cookies['user_id'] };
   res.render('pages/urls_show', templateVars);
 });
