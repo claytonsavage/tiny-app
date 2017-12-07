@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/_head %>
+</head>
+<body class="container">
+<header>
+    <% include ../partials/_header %>
+</header>
+<main>
+    <div>
+      <form action="/register" method="POST" style="margin:50px;">
+        <p><h1>Register Now</h1></p>
+        <label for="email">
+          Email:
+        </label>
+        </br>
+        <input id="email" type="email" name="email" placeholder="user@email.com" style="width: 300px">
+        </br>
+        <label for="password">
+          Password:
+        </label>
+        </br>
+        <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
+        </br>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+</main>
+
+<footer>
+    <% include ../partials/_footer %>
+</footer>
+
+</body>
+</html>
