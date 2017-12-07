@@ -15,12 +15,14 @@
     <div class="jumbotron">
         <h1><%= shortURL %></h1>
         <form action="/urls/<%= shortURL %>" method="POST" style="margin:0px;">
-        <input id="longURL" type="text" name="longURL" placeholder="<%= URL[shortURL] %>" style="width: 300px">
-        <input type="submit" value="Update">
+            <input id="longURL" type="text" name="longURL" placeholder="<%= URL[shortURL] %>" style="width: 300px">
+            <input type="submit" value="Update">
         </form>
     </div>
     <div>
-      <a>SHORTEN URL</a>
+        <form action="/new">
+            <input type="submit" value="Shorten URL's" class="btn" />
+        </form>
     </div>
 </main>
 

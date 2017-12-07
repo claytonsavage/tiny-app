@@ -51,8 +51,9 @@ app.get("/urls/:id", (req, res) => {
   res.render("pages/urls_show", templateVars);
 });
 
-app.get('/new', function(req, res) {
-    res.render('pages/urls_new');
+app.get("/urls/new", (req, res) => {
+  let templateVars = { shortURL: req.params.id, URL: urlDatabase, username: req.cookies["username"] };
+  res.render('pages/urls_new', templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -64,7 +65,11 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
+  if (longURL !== undefined) {
   res.redirect(302, longURL);
+  } else if (longURL === undefined) {
+  res.send( 'Error: NOT A VALID URL' );
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -76,7 +81,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  //update the db with new long url
   let longURL = urlDatabase[req.params.shortURL];
   let shortURL = req.params.shortURL;
   let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
