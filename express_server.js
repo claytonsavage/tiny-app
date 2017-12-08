@@ -55,7 +55,12 @@ const addHTTP = function (longURL) {
 };
 
 app.get('/', function(req, res) {
-  res.redirect(302, '/urls');
+  if (req.session.user_id) {
+    res.redirect(302, '/urls');
+    return
+  } else {
+    res.redirect(302, '/login');
+  }
 });
 
 
@@ -65,7 +70,7 @@ app.get('/urls', (req, res) => {
   urllist = Object.keys(templateVars['urls']);
   userUrls = {};
   if(!templateVars.user) {
-    res.send('<p>Please <a href="/login">Login</a> or <a href="/register">Register</a></p>');
+    res.send('<p><h1>Please <a href="/login">Login</a> or <a href="/register">Register</a> to view the Urls page.</h1></p>');
     return;
   }
   for (var i in urllist) {
@@ -100,6 +105,10 @@ app.post('/logout', (req, res) => {
 
 app.get('/register', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+  if (req.session.user_id) {
+    res.redirect(302, '/urls');
+    return
+  }
   res.render('pages/register', templateVars);
 });
 
@@ -156,6 +165,10 @@ app.post('/login', (req, res) => {
 
 app.get('/login', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+  if (req.session.user_id) {
+    res.redirect(302, '/urls');
+    return
+  }
   res.render('pages/login', templateVars);
 });
 
@@ -198,6 +211,10 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.session.user_id] };
   var user_id = req.session.user_id;
   var shortURL = req.params.id;
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send( 'Error: NOT A VALID URL' );
+    return;
+  }
   var urlcurrent = urlDatabase[shortURL].createdBy;
   if (urlcurrent === user_id) {
     res.render('pages/urls_show', templateVars);
