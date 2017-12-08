@@ -7,15 +7,8 @@
         <a class="navbar-brand" href="/">
             Tiny App
         </a>
-        <% if (username == undefined || username == "") { %>
-        <form class="form-inline" action="/login" style="padding: 10px; margin-left: 100px;" method="POST">
-          <div class="form-group">
-            <input type="text" class="form-control" id="username" placeholder="username" name="username">
-            <button type="submit" class="btn btn-default">Login</button>
-          </div>
-        </form>
-        <% } else if (username !== '') { %>
-          <p><%= username %></p>
+        <% if (user !== undefined) { %>
+          <p><%= user.id %></p>
           <form method="POST" action="/logout">
           <input type="submit" value="Logout" class="btn" />
           </form>
