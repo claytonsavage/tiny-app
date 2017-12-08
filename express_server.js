@@ -71,14 +71,18 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let username = req.body.username;
-  res.cookie('user_id', id);
+  let username = req.cookies.user_id;
+  if (username !== undefined){
+  res.cookie('user_id');
   res.redirect(302, '/urls');
+  } else {
+  res.send('enter your information')
+  }
 });
 
 app.post('/logout', (req, res) => {
-  let username = req.body.username;
-  res.clearCookie('user_id');
+  let username = req.cookies.user_id;
+  res.clearCookie('user_id', id);
   res.redirect(302, '/urls');
 });
 
@@ -127,19 +131,19 @@ app.post ('/login', (req, res) => {
       found = true;
     }
   }
-  if (password === '' || email === '') {
+  if (password === undefined || email === undefined) {
     res.status(400);
     res.send('Please enter email and password');
   return;
-  } if ( found === true ){
-    res.status(400);
-    res.send('User already exists');
-  } else {
+  } else if ( found === true ){
       id = generateRandomString();
       username = { id: id, email: email, password: password};
       users[id] = username;
       res.cookie('user_id', id);
       res.redirect(302, '/urls');
+  } else {
+    res.status(400);
+    res.send('User does not exist');
   }
 });
 
