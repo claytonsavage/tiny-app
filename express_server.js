@@ -72,7 +72,6 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  let username = req.cookies.user_id;
   res.clearCookie('user_id', id);
   res.redirect(302, '/urls');
 });
@@ -103,8 +102,8 @@ app.post ('/register', (req, res) => {
     res.send('User already exists');
   } else {
       id = generateRandomString();
-      username = { id: id, email: email, password: password};
-      users[id] = username;
+      user = { id: id, email: email, password: password};
+      users[id] = user;
       res.cookie('user_id', id);
       res.redirect(302, '/urls');
   }
