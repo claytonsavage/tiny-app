@@ -19,7 +19,7 @@
             <li>
 
               <form action="/urls/<%= [prop] %>">
-                <b><%= urls[prop] %></b> is shortened to <b><%= [prop] %></b>
+                <b><%= urls[prop].longURL %></b> is shortened to <b><%= [prop] %></b>
                 <input type="submit" value="Edit" class=".btn-link" />
               </form>
               <form method="POST" action="/urls/<%= [prop] %>/delete">

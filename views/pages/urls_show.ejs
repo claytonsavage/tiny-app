@@ -13,9 +13,9 @@
 
 <main>
     <div class="jumbotron">
-        <h1><%= shortURL %></h1>
-        <form action="/urls/<%= shortURL %>" method="POST" style="margin:0px;">
-            <input id="longURL" type="text" name="longURL" placeholder="<%= URL[shortURL] %>" style="width: 300px">
+        <h1><%= URL[shortURL].shortURL %></h1>
+        <form action="/urls/<%= URL[shortURL].shortURL %>" method="POST" style="margin:0px;">
+            <input id="longURL" type="text" name="longURL" placeholder="<%= URL[shortURL].longURL %>" style="width: 300px">
             <input type="submit" value="Update">
         </form>
     </div>
