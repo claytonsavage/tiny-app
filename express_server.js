@@ -8,13 +8,14 @@ const users = {
   'userRandomID': {
     id: 'userRandomID',
     email: 'user@example.com',
-    password: '123',
+    password: bcrypt.hashSync('123', 10),
     userID: 'lemon'
   },
   'user2RandomID': {
     id: 'user2RandomID',
     email: 'user2@example.com',
-    password: 'dishwasher-funk'
+    password: bcrypt.hashSync('123', 10),
+    userID: 'lime'
   }
 };
 app.set('view engine', 'ejs');
@@ -111,7 +112,7 @@ app.post('/register', (req, res) => {
       found = true;
     }
   }
-  if (password === '' || email === '') {
+  if (req.body.password === '' || email === '') {
     res.status(400);
     res.send('Please enter email and password');
     return;
