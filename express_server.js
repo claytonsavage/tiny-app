@@ -61,7 +61,10 @@ app.get('/urls', (req, res) => {
 
 app.get('/urls/new', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.cookies.user_id] };
+  if (templateVars.user) {
   res.render('pages/urls_new', templateVars);
+  }
+  res.redirect(302, '/login');
 });
 
 app.post('/urls', (req, res) => {
@@ -88,8 +91,8 @@ app.post ('/register', (req, res) => {
   var found = false;
 
   for(var i = 0; i < keys.length; i++) {
-    emailsofall = users[keys[i]].email;
-    if (emailsofall == email) {
+    user = users[keys[i]].email;
+    if (user == email) {
       found = true;
     }
   }
