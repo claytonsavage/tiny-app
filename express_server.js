@@ -7,7 +7,8 @@ const users = {
   'userRandomID': {
     id: 'userRandomID',
     email: 'user@example.com',
-    password: 'purple-monkey-dinosaur'
+    password: 'purple-monkey-dinosaur',
+    user_id: 'lemon'
   },
  'user2RandomID': {
     id: 'user2RandomID',
@@ -70,16 +71,6 @@ app.post('/urls', (req, res) => {
   res.render('pages/urls_index', templateVars);
 });
 
-app.post('/login', (req, res) => {
-  let username = req.cookies.user_id;
-  if (username !== undefined){
-  res.cookie('user_id');
-  res.redirect(302, '/urls');
-  } else {
-  res.send('enter your information')
-  }
-});
-
 app.post('/logout', (req, res) => {
   let username = req.cookies.user_id;
   res.clearCookie('user_id', id);
@@ -122,29 +113,23 @@ app.post ('/register', (req, res) => {
 app.post ('/login', (req, res) => {
   password = req.body.password;
   email = req.body.email;
-  let keys = Object.keys(users);
   var found = false;
-
-  for(var i = 0; i < keys.length; i++) {
-    emailsofall = users[keys[i]].email;
-    if (emailsofall == email) {
-      found = true;
-    }
-  }
-  if (password === undefined || email === undefined) {
+  if (!password || !email) {
     res.status(400);
     res.send('Please enter email and password');
-  return;
-  } else if ( found === true ){
-      id = generateRandomString();
-      username = { id: id, email: email, password: password};
-      users[id] = username;
-      res.cookie('user_id', id);
-      res.redirect(302, '/urls');
-  } else {
-    res.status(400);
-    res.send('User does not exist');
+    return;
   }
+  let keys = Object.keys(users);
+  for(var i = 0; i < keys.length; i++) {
+    const user = users[keys[i]];
+    if (user.email == email && user.password == password) {
+      res.cookie('user_id', user.id);
+      res.redirect(302, '/urls');
+      return;
+    }
+  }
+  res.status(400);
+  res.send('Login not correct');
 });
 
 app.get ('/login', (req, res) => {
