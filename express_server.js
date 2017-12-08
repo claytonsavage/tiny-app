@@ -65,6 +65,7 @@ app.get('/urls/new', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.cookies.user_id] };
   if (templateVars.user) {
   res.render('pages/urls_new', templateVars);
+  return;
   }
   res.redirect(302, '/login');
 });
@@ -73,8 +74,7 @@ app.post('/urls', (req, res) => {
   let newShortURL = generateRandomString();
   let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   urlDatabase[newShortURL] = { longURL: addHTTP(req.body.longURL), createdBy: req.cookies.user_id, shortURL: newShortURL};
-  console.log(urlDatabase);
-  res.render('pages/urls_index', templateVars);
+  res.redirect(302, 'urls');
 });
 
 app.post('/logout', (req, res) => {
