@@ -1,27 +1,22 @@
 <!-- views/partials/header.ejs -->
-
 <nav class="navbar navbar-default" role="navigation">
 <div class="container-fluid">
-
     <div class="navbar-header">
         <a class="navbar-brand" href="/">
-            Tiny App
-        </a>
+        Tiny App</a>
         <% if (user !== undefined) { %>
-          <p><%= user.email %></p>
+          <p> <%= user.email %> </p>
           <form method="POST" action="/logout">
-          <input type="submit" value="Logout" class="btn" />
+            <input type="submit" value="Logout" class="btn" />
           </form>
         <% } else { %>
           <form action="/register">
-          <input type="submit" value="Register" class="btn" />
+            <input type="submit" value="Register" class="btn" />
           </form>
           <form action="/login">
-          <input type="submit" value="Login" class="btn" />
+            <input type="submit" value="Login" class="btn" />
           </form>
-          <% } %>
-        <ul class="nav navbar-nav">
-        </ul>
+        <% } %>
     </div>
 </div>
 </nav>

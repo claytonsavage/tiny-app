@@ -69,6 +69,7 @@ const addHTTP = function (longURL) {
 };
 // -----------------------------------------------------
 // *HTTP REQUESTS*
+// *index get*
 app.get('/', function(req, res) {
   if (req.session.user_id) {
     res.redirect(302, '/urls');
@@ -82,7 +83,6 @@ app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
   urlNamesinDatabase = Object.keys(templateVars['urls']);
   userUrls = {};
-//if not logged in
   if(!templateVars.user) {
     res.send('<p><h1>Please <a href="/login">Login</a> or <a href="/register">Register</a> to view the Urls page.</h1></p>');
     return;
@@ -98,7 +98,7 @@ app.get('/urls', (req, res) => {
 
 app.post('/urls', (req, res) => {
   let newShortURL = generateRandomString();
-  let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+  //let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
   urlDatabase[newShortURL] = { longURL: addHTTP(req.body.longURL), createdBy: req.session.user_id, shortURL: newShortURL};
   res.redirect(302, 'urls');
 });
@@ -113,7 +113,7 @@ app.get('/urls/new', (req, res) => {
   res.redirect(302, '/login');
 });
 
-
+// *logout*
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect(302, '/urls');
@@ -156,7 +156,7 @@ app.post('/register', (req, res) => {
   }
 });
 // -----------------------------------------------------
-
+// login get and post
 app.post('/login', (req, res) => {
   password = req.body.password;
   email = req.body.email;
@@ -187,6 +187,7 @@ app.get('/login', (req, res) => {
   }
   res.render('pages/login', templateVars);
 });
+// -----------------------------------------------------
 // *urls/:shortURL get post delete*
 app.get('/u/:shortURL', (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
@@ -228,10 +229,6 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.session.user_id] };
   var user_id = req.session.user_id;
   var shortURL = req.params.id;
-  if (!urlDatabase[req.params.shortURL]) {
-    res.send( 'Error: NOT A VALID URL' );
-    return;
-  }
   var urlcurrent = urlDatabase[shortURL].createdBy;
   if (urlcurrent === user_id) {
     res.render('pages/urls_show', templateVars);
