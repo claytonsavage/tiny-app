@@ -1,9 +1,24 @@
-var cookieSession = require('cookie-session')
+//server settings and requirements
+var cookieSession = require('cookie-session');
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+//app settings ----------------------------------------------
+app.set('view engine', 'ejs');
+app.use(cookieSession({
+  name: 'session',
+  secret: 'development'
+}));
+app.use(bodyParser.urlencoded({extended: true}));
+app.listen(PORT, () => {
+//notify server has been initialized
+  console.log(`Example app listening on port ${PORT}!`);
+});
+// -----------------------------------------------------
+// *DATABASES*
+//user database
 const users = {
   'userRandomID': {
     id: 'userRandomID',
@@ -18,32 +33,31 @@ const users = {
     user_id: 'lime'
   }
 };
-app.set('view engine', 'ejs');
-app.use(cookieSession({
-  name: 'session',
-  secret: "development"
-}))
-app.use(bodyParser.urlencoded({extended: true}));
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
+//url database
 const urlDatabase = {
-  'b2xVn2': {longURL: 'http://www.lighthouselabs.ca', createdBy: 'userRandomID', shortURL: 'b2xVn2'},
-  '9sm5xK': {longURL: 'http://www.google.com', createdBy: 'user2RandomID', shortURL: '9sm5xK'},
-  'asewf2': {longURL: 'http://www.yahoo.ca', createdBy: 'userRandomID', shortURL: 'asewf2'}
+  'b2xVn2': {
+    longURL: 'http://www.lighthouselabs.ca',
+    createdBy: 'userRandomID',
+    shortURL: 'b2xVn2'},
+  '9sm5xK': {
+    longURL: 'http://www.google.com',
+    createdBy: 'user2RandomID',
+    shortURL: '9sm5xK'},
+  'asewf2': {
+    longURL: 'http://www.yahoo.ca',
+    createdBy: 'userRandomID',
+    shortURL: 'asewf2'}
 };
-
-
+// -----------------------------------------------------
+// *FUNCTIONS*
+//generates a random string for use in creating unique id's
 function generateRandomString() {
   var text = '';
   var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
   for (var i = 0; i < 5; i++) { text += possible.charAt(Math.floor(Math.random() * possible.length)); }
-
   return text;
 }
-
+//adds http:// to URL's that are missing them
 const addHTTP = function (longURL) {
   const substringHTTPS = 'https://';
   const substringHTTP = 'http://';
@@ -53,34 +67,42 @@ const addHTTP = function (longURL) {
     return substringHTTP + longURL;
   }
 };
-
+// -----------------------------------------------------
+// *HTTP REQUESTS*
 app.get('/', function(req, res) {
   if (req.session.user_id) {
     res.redirect(302, '/urls');
-    return
+    return;
   } else {
     res.redirect(302, '/login');
   }
 });
-
-
+// *urls get and post*
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
-  //names of urls
-  urllist = Object.keys(templateVars['urls']);
+  urlNamesinDatabase = Object.keys(templateVars['urls']);
   userUrls = {};
+//if not logged in
   if(!templateVars.user) {
     res.send('<p><h1>Please <a href="/login">Login</a> or <a href="/register">Register</a> to view the Urls page.</h1></p>');
     return;
   }
-  for (var i in urllist) {
-    if (templateVars['urls'][urllist[i]]['createdBy'] === templateVars['user']['id']) {
-      userUrls[templateVars['urls'][urllist[i]]['shortURL']] = templateVars['urls'][urllist[i]];
+  for (var i in urlNamesinDatabase) {
+    if (templateVars['urls'][urlNamesinDatabase[i]]['createdBy'] === templateVars['user']['id']) {
+      userUrls[templateVars['urls'][urlNamesinDatabase[i]]['shortURL']] = templateVars['urls'][urlNamesinDatabase[i]];
     }
   }
   templateVars['urls'] = userUrls;
   res.render('pages/urls_index', templateVars);
 });
+
+app.post('/urls', (req, res) => {
+  let newShortURL = generateRandomString();
+  let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+  urlDatabase[newShortURL] = { longURL: addHTTP(req.body.longURL), createdBy: req.session.user_id, shortURL: newShortURL};
+  res.redirect(302, 'urls');
+});
+// -----------------------------------------------------
 
 app.get('/urls/new', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.session.user_id] };
@@ -91,23 +113,17 @@ app.get('/urls/new', (req, res) => {
   res.redirect(302, '/login');
 });
 
-app.post('/urls', (req, res) => {
-  let newShortURL = generateRandomString();
-  let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
-  urlDatabase[newShortURL] = { longURL: addHTTP(req.body.longURL), createdBy: req.session.user_id, shortURL: newShortURL};
-  res.redirect(302, 'urls');
-});
 
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect(302, '/urls');
 });
-
+// *register get and post*
 app.get('/register', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
   if (req.session.user_id) {
     res.redirect(302, '/urls');
-    return
+    return;
   }
   res.render('pages/register', templateVars);
 });
@@ -139,9 +155,9 @@ app.post('/register', (req, res) => {
     res.redirect(302, '/urls');
   }
 });
+// -----------------------------------------------------
 
 app.post('/login', (req, res) => {
-  //need help here
   password = req.body.password;
   email = req.body.email;
   var found = false;
@@ -167,11 +183,11 @@ app.get('/login', (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
   if (req.session.user_id) {
     res.redirect(302, '/urls');
-    return
+    return;
   }
   res.render('pages/login', templateVars);
 });
-
+// *urls/:shortURL get post delete*
 app.get('/u/:shortURL', (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     res.send( 'Error: NOT A VALID URL' );
@@ -206,6 +222,7 @@ app.post('/urls/:shortURL', (req, res) => {
   urlDatabase[shortURL].longURL = newValue;
   res.redirect(302, '/urls/' + req.params.shortURL);
 });
+// -----------------------------------------------------
 
 app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase, user: users[req.session.user_id] };
